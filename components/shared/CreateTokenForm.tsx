@@ -4,7 +4,14 @@ import { races,weapons,armors,classes, hairLength, creditFee } from '../../const
 import { TransformSelect } from '../ui/transformSelect';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
 import { startTransition, useState } from 'react';
 import { raceToPrompt } from '@/constants/racePrompts';
