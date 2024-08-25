@@ -153,6 +153,24 @@ const createImage = async (imageRequest: ImageRequest) => {
       </div>
     </div>
     <div style={{width:'25%'}}></div>
+    <Carousel className="w-full max-w-xs">
+      <CarouselContent>
+        {Array.from({ length: 2 }).map((_, index) => (
+          <CarouselItem key={index}>
+            <div className="p-1">
+              <Card>
+                <CardContent className="flex aspect-square items-center justify-center p-6">
+                  <span className="text-4xl font-semibold">{index + 1}</span>
+                </CardContent>
+              </Card>
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
+    {/* <div style={{width:'25%'}}></div>
     <div style={{ display: 'flex', width: '100%' }}>
         <div style={{ display: 'contents', flexDirection: 'row', alignItems: 'center', width: '100%', border: '1px solid white' }}>
             <div className={`image-box ${isSubmitting ? 'loading' : ''}`} style={{ backgroundColor: 'gray', width: '100%', height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -164,8 +182,8 @@ const createImage = async (imageRequest: ImageRequest) => {
                 {addedImageUrlTwo && <img src={addedImageUrlTwo} alt="Generated Image with Background" />}
             </div>
         </div>
-        </div>
-    </div>
+        </div> */}
+    </div> 
   );
 }
 
