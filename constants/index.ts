@@ -2,32 +2,17 @@ import { title } from "process";
 
 export const navLinks = [
     {
-      label: "Home",
-      route: "/",
-      icon: "/assets/icons/home.svg",
-    },
-    {
-      label: "Image Restore",
-      route: "/transformations/add/restore",
-      icon: "/assets/icons/image.svg",
-    },
-    {
-      label: "Generative Fill",
-      route: "/transformations/add/fill",
-      icon: "/assets/icons/stars.svg",
-    },
-    {
-      label:"Character Creator",
+      label:"Create Character",
       route: "/tokens/add",
       icon: "/assets/icons/dwarf.svg"
     },
     {
-      label: "Profile",
+      label: "Your Library",
       route: "/profile",
       icon: "/assets/icons/profile.svg",
     },
     {
-      label: "Buy Credits",
+      label: "Buy Tokens",
       route: "/credits",
       icon: "/assets/icons/bag.svg",
     },

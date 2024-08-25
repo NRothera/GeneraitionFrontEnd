@@ -41,7 +41,7 @@ const MobileNav = () => {
               height={23}/>
 
               <ul className='header-nav_elements'>
-                {navLinks.slice(0, 6).map((link)=> {
+                {navLinks.slice(0, 3).map((link)=> {
                     const isActive = link.route === pathname
 
                     return (

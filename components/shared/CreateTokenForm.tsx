@@ -99,12 +99,12 @@ const createImage = async (imageRequest: ImageRequest) => {
 
   return (
     //add styling to the form
-    <div className='flex'>
-        <div className="flex justify-between border border-gray-300">
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexWrap: 'wrap', width: '50%' }}>
+    <div className='flex h-screen'>
+        <div className="flex flex-col justify-between w-1/2 max-w-xl p-4">
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                 {creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />}
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="imageTitle">Image Title</Label>
+                <div className="grid w-full items-center gap-1.5 mb-4">
+                    <Label htmlFor="imageTitle" className='text-white'>Choose your features</Label>
                     <Input type="text" id="imageTitle" placeholder="Image Title" value={imageTitle} onChange={(e) => setImageTitle(e.target.value)}/>
                 </div>
                 <TransformSelect 
@@ -137,19 +137,27 @@ const createImage = async (imageRequest: ImageRequest) => {
                     label="Armor" 
                     items={armors} 
                 />
-                <Button type="submit">Create</Button>
+                <br />
+                <div style={{width: '100%'}}>
+                    <Button type="submit" className="button h-[44px] w-full md:h-[54px]">Create</Button>
+                </div>
             </form>
         <div>
       </div>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-            <div className={`image-box ${isSubmitting ? 'loading' : ''}`}>
+    </div>
+    <div style={{width:'25%'}}></div>
+    <div style={{ display: 'flex', width: '100%' }}>
+        <div style={{ display: 'contents', flexDirection: 'row', alignItems: 'center', width: '100%', border: '1px solid white' }}>
+            <div className={`image-box ${isSubmitting ? 'loading' : ''}`} style={{ backgroundColor: 'gray', width: '100%', height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {addedImageUrl && <img src={addedImageUrl} alt="Generated Image" />}
             </div>
-            <div className={`image-box ${isSubmitting ? 'loading' : ''}`}>
+            <div style={{width:'25%'}}></div>
+
+            <div className={`image-box ${isSubmitting ? 'loading' : ''}`} style={{ backgroundColor: 'gray', width: '100%', height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {addedImageUrlTwo && <img src={addedImageUrlTwo} alt="Generated Image with Background" />}
             </div>
-      </div>
+        </div>
+        </div>
     </div>
   );
 }

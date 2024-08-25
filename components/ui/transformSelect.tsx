@@ -21,7 +21,7 @@ export const TransformSelect: React.FC<SelectComponentProps> = ({ onValueChange,
             <SelectTrigger>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 <SelectGroup>
                     <SelectLabel>{label}</SelectLabel>
                     {items.map((item, index) => (
