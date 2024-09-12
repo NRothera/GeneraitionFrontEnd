@@ -9,8 +9,7 @@ export default async function AzureStorageUpload(req, res) {
 
     // Get your connection string from env variables or other secure sources
 
-    // const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
-    const AZURE_STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=generaition;AccountKey=LaL5PpoWOfc3OEI4b86548sV0w01E9WKVGuz4nne345jnnBHkyAAsxX2vja/qi5udO6eiefNr6rZ+AStGNLewQ==;EndpointSuffix=core.windows.net";
+    const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 
     const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 
