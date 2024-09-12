@@ -5,13 +5,15 @@ import { StableDiffusionModel } from '@/types/stableDiffusion';
 class StableDiffusionApiCaller {
     async CreateImage(imageRequest: { title: string; prompt: string; userId: string }): Promise<any> {
         try {
+            console.log("Received image request:", imageRequest);
+
             const modelData = new StableDiffusionModel();
             modelData.prompt = imageRequest.prompt;
             modelData.override_settings = {};
             modelData.override_settings["sd_model_checkpoint"] = "dDTopDownToken_v10.ckpt";
 
             const url = `${process.env.NEXT_PUBLIC_STABLE_DIFFUSION_API_URL}/sdapi/v1/txt2img`;
-            console.log("url: " + url);
+            console.log("Stable Diffusion API URL:", url);
             const imageResponse = await axios({
                 method: 'post',
                 url: '/sdapi/v1/txt2img',

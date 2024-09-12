@@ -19,9 +19,12 @@ import { weaponToPrompt } from '@/constants/weaponPrompts';
 import { hairToPrompt } from '@/constants/hairPrompts';
 import { armorToPrompt } from '@/constants/armorPrompts';
 import { classToPrompt } from '@/constants/classPrompts';
-import { addImage } from '@/lib/actions/image.actions';
+import { addImage, doesUserHaveImageWithTitle, getNextImageTitle } from '@/lib/actions/image.actions';
 import { InsufficientCreditsModal } from './InsufficientCreditsModal';
 import { updateCredits } from '@/lib/actions/user.actions';
+import DownloadButton from './DownloadButton';
+import ClipLoader from 'react-spinners/ClipLoader';
+import LoadingOverlay from './LoadingOverlay';
 
 interface ImageRequest {
     title: string;
@@ -40,12 +43,17 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
   const [formVisible, setFormVisible] = useState(true);
   const [addedImageUrl, setAddedImageUrl] = useState(null);
   const [addedImageUrlTwo, setAddedImageUrlTwo] = useState(null);
+  const [titleError, setTitleError] = useState(''); // State for title error message
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
     setIsSubmitting(true);
+    setAddedImageUrl(null);
+    setAddedImageUrlTwo(null);
+    setTitleError('');
+
     await updateCredits(userId, creditFee)
     
-    e.preventDefault(); // Prevent the form from refreshing the page
     const chosenRace  = raceToPrompt[race];
     const chosenWeapon = weaponToPrompt[weapon];
     const chosenArmor = armorToPrompt[armor];
@@ -53,7 +61,15 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
     const chosenClass = classToPrompt[classType];
 
     //write some code that calls the stable diffusion create image api 
-    const titleOfImage = imageTitle ? imageTitle : "Image_Title";
+    const titleOfImage = imageTitle ? imageTitle : await getNextImageTitle(userId);
+    const titleExists = await doesUserHaveImageWithTitle({ userId, title: titleOfImage });
+
+    if (titleExists) {
+      setTitleError('An image with this title already exists. Please choose a different title.');
+      setIsSubmitting(false);
+      return;
+    }
+  
     const prompt = `${chosenRace}, ${chosenWeapon}, ${chosenArmor}, ${chosenHair}, ${chosenClass}, (background color = #66FF00)`;
 
     const imageRequest = {
@@ -65,8 +81,8 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
     await createImage(imageRequest);
 };
 
-
 const createImage = async (imageRequest: ImageRequest) => {
+    console.log(imageRequest);
     try {
         const response = await fetch('/api/generateImage', {
             method: 'POST',
@@ -76,6 +92,10 @@ const createImage = async (imageRequest: ImageRequest) => {
             body: JSON.stringify(imageRequest),
         });
 
+        console.log("Fetch response status:", response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         console.log("first url" + data.url)
         console.log("second url" + data.urlTwo)
@@ -100,6 +120,7 @@ const createImage = async (imageRequest: ImageRequest) => {
                 });
     } catch (error) {
         console.error("Error creating image:", error);
+        setIsSubmitting(false);
     }
 };
 
@@ -112,7 +133,9 @@ const createImage = async (imageRequest: ImageRequest) => {
                 {creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />}
                 <div className="grid w-full items-center gap-1.5 mb-4">
                     <Label htmlFor="imageTitle" className='text-white'>Choose your features</Label>
-                    <Input type="text" id="imageTitle" placeholder="Image Title" value={imageTitle} onChange={(e) => setImageTitle(e.target.value)}/>
+                    <Input type="text" id="imageTitle" placeholder="Image Title (Optional)" value={imageTitle} onChange={(e) => setImageTitle(e.target.value)}
+                    style={{borderColor: titleError ? 'red' : 'inital'}}/>
+                    {titleError && <p style={{ color: 'red', fontSize: '0.75rem'  }}>{titleError}</p>}
                 </div>
                 <TransformSelect 
                     onValueChange={setRace} 
@@ -149,40 +172,63 @@ const createImage = async (imageRequest: ImageRequest) => {
                     <Button type="submit" className="button h-[44px] w-full md:h-[54px]">Create</Button>
                 </div>
             </form>
+            {/* <LoadingOverlay loading={isSubmitting} /> Add the loading overlay */}
+
         <div>
       </div>
     </div>
     <div style={{width:'25%'}}></div>
-    <Carousel className="w-full max-w-xs">
-      <CarouselContent>
-        {Array.from({ length: 2 }).map((_, index) => (
-          <CarouselItem key={index}>
-            <div className="p-1">
-              <Card>
-                <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="text-4xl font-semibold">{index + 1}</span>
-                </CardContent>
-              </Card>
+  <Carousel className="w-full max-w-xs">
+  <CarouselContent>
+    <CarouselItem>
+      <div className="p-1">
+        <Card>
+          <CardContent className="flex aspect-square items-center justify-center p-6">
+          {!isSubmitting && !addedImageUrl && <span className="text-4xl font-semibold">1</span>}
+          <div className={`${isSubmitting ? 'loading' : ''}`}>
+              {isSubmitting && !addedImageUrl ? (
+                  <ClipLoader size={50} color={"#123abc"} loading={isSubmitting} />
+              ) : (
+                  addedImageUrl && <img src={addedImageUrl} alt="Generated Image" />
+              )}
+          </div>
+          </CardContent>
+        </Card>
+        <div className="flex justify-center mt-2">
+          <p>Image without a background</p>
+        </div>        
+        { addedImageUrl && (
+           <div className="flex justify-center mt-2">
+            <DownloadButton url={addedImageUrl} filename="image_without_background.png" />
+          </div>      
+          )}
+      </div>
+    </CarouselItem>
+    <CarouselItem>
+      <div className="p-1">
+        <Card>
+          <CardContent className="flex aspect-square items-center justify-center p-6">
+          {!addedImageUrlTwo && <span className="text-4xl font-semibold">2</span>}
+          <div className={`${isSubmitting ? 'loading' : ''}`}>
+              {addedImageUrlTwo && <img src={addedImageUrlTwo} alt="Generated Image with Background" />}
             </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
-    {/* <div style={{width:'25%'}}></div>
-    <div style={{ display: 'flex', width: '100%' }}>
-        <div style={{ display: 'contents', flexDirection: 'row', alignItems: 'center', width: '100%', border: '1px solid white' }}>
-            <div className={`image-box ${isSubmitting ? 'loading' : ''}`} style={{ backgroundColor: 'gray', width: '100%', height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                {addedImageUrl && <img src={addedImageUrl} alt="Generated Image" />}
-            </div>
-            <div style={{width:'25%'}}></div>
-
-            <div className={`image-box ${isSubmitting ? 'loading' : ''}`} style={{ backgroundColor: 'gray', width: '100%', height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                {addedImageUrlTwo && <img src={addedImageUrlTwo} alt="Generated Image with Background" />}
-            </div>
+          </CardContent>
+        </Card>
+        <div className="flex justify-center mt-2">
+          <p>Image with a background</p>
         </div>
-        </div> */}
+        {addedImageUrlTwo && (
+          <div className="flex justify-center mt-2">
+          <DownloadButton url={addedImageUrlTwo} filename="image_with_background.png" />
+          </div>      
+        )}
+      </div>
+    </CarouselItem>
+  </CarouselContent>
+  <CarouselPrevious />
+  <CarouselNext />
+</Carousel>
+    
     </div> 
   );
 }

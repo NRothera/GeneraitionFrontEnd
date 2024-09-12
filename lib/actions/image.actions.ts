@@ -179,3 +179,53 @@ export async function getUserImages({
     handleError(error);
   }
 }
+// CHECK IF USER HAS IMAGE WITH SPECIFIC TITLEå
+
+// Existing doesUserHaveImageWithTitle function
+export async function doesUserHaveImageWithTitle({
+  userId,
+  title,
+}: {
+  userId: string;
+  title: string;
+}): Promise<boolean> {
+  try {
+    await connectToDatabase();
+
+    const image = await Image.findOne({ author: userId, title: title });
+
+    return !!image;
+  } catch (error) {
+    handleError(error);
+    return false;
+  }
+}
+
+// New function to find the next available image title
+export async function getNextImageTitle(userId: string): Promise<string> {
+  try {
+    await connectToDatabase();
+
+    const author = await User.findById(userId);
+
+    const regex = new RegExp(`^${author.username}image(\\d+)$`);
+    const images = await Image.find({ author: userId, title: { $regex: regex } });
+
+    let maxIndex = 0;
+
+    images.forEach(image => {
+      const match = image.title.match(regex);
+      if (match && match[1]) {
+        const index = parseInt(match[1], 10);
+        if (index > maxIndex) {
+          maxIndex = index;
+        }
+      }
+    });
+
+    return `${author.username}image${maxIndex + 1}`;
+  } catch (error) {
+    handleError(error);
+    return `${userId}image1`; // Default to image1 if there's an error
+  }
+}

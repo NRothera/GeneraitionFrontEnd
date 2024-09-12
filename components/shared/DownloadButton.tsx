@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { saveAs } from 'file-saver';
+import { Button } from "@/components/ui/button"
 
 interface DownloadButtonProps {
   url: string;
@@ -26,9 +27,9 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({ url, filename }) => {
   };
 
   return (
-    <button onClick={downloadHandler} className="btn-download">
+    <Button onClick={downloadHandler} className="btn-download">
       Download
-    </button>
+    </Button>
   );
 };
 
