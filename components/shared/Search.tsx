@@ -9,7 +9,7 @@ import { formUrlQuery, removeKeysFromQuery } from "@/lib/utils";
 
 export const Search = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams() || {};
   const [query, setQuery] = useState("");
 
   useEffect(() => {

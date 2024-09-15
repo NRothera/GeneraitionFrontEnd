@@ -31,7 +31,7 @@ export const Collection = ({
   hasSearch?: boolean;
 }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams() || {};
 
   // PAGINATION HANDLER
   const onPageChange = (action: string) => {
