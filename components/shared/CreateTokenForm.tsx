@@ -83,7 +83,7 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
 
     //write some code that calls the stable diffusion create image api 
     const titleOfImage = imageTitle ? imageTitle : await getNextImageTitle(userId);
-    const titleExists = await doesUserHaveImageWithTitle({ userId, title: titleOfImage });
+    const titleExists = await doesUserHaveImageWithTitle({ userId, title: titleOfImage.replace(/\s/g, '_') });
 
     if (titleExists) {
       setTitleError('An image with this title already exists. Please choose a different title.');

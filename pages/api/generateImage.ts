@@ -52,6 +52,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const response = await apiCaller.CreateImage({ title, prompt, userId });
         res.status(200).json(response);
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error: ' + error });
     }
 }
