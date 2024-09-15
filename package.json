@@ -37,6 +37,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.51.2",
     "react-spinners": "^0.14.1",
+    "react-toastify": "^10.0.5",
     "stripe": "^15.10.0",
     "svix": "^1.21.0",
     "tailwind-merge": "^2.2.2",

@@ -81,9 +81,12 @@ export async function updateCredits(userId: string, creditFee: number) {
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
+    console.log("user credit balance: " + user.creditBalance);
+
     // Check the user's credit balance
     if (user.creditBalance <= 0) {
-      throw new Error("Insufficient credits");
+      console.log("Insufficient credits, returning error");
+      return { message: "Insufficient credits" };    
     }
 
     const updatedUserCredits = await User.findOneAndUpdate(

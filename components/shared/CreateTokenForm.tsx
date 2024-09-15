@@ -5,7 +5,9 @@ import { TransformSelect } from '../ui/transformSelect';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
-import { Toaster } from '@/components/ui/toaster';
+import { useToast } from "@/components/ui/use-toast"
+
+
 import {
   Carousel,
   CarouselContent,
@@ -14,7 +16,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
-import { startTransition, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import { raceToPrompt } from '@/constants/racePrompts';
 import { weaponToPrompt } from '@/constants/weaponPrompts';
 import { hairToPrompt } from '@/constants/hairPrompts';
@@ -26,7 +28,6 @@ import { updateCredits } from '@/lib/actions/user.actions';
 import DownloadButton from './DownloadButton';
 import ClipLoader from 'react-spinners/ClipLoader';
 import LoadingOverlay from './LoadingOverlay';
-import { toast } from '../ui/use-toast';
 
 interface ImageRequest {
     title: string;
@@ -35,6 +36,7 @@ interface ImageRequest {
 }
 
 const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
+  const {toast} = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [race, setRace] = useState('');
   const [weapon, setWeapon] = useState('');
@@ -46,6 +48,8 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
   const [addedImageUrl, setAddedImageUrl] = useState(null);
   const [addedImageUrlTwo, setAddedImageUrlTwo] = useState(null);
   const [titleError, setTitleError] = useState(''); // State for title error message
+  const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
+
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
@@ -55,14 +59,20 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
     setTitleError('');
 
     try {
-      await updateCredits(userId, creditFee)
-    } catch (error){
+      const response = await updateCredits(userId, creditFee)
+    
         // Handle insufficient credits error
-        if ((error as Error).message === "Insufficient credits") {
-          <Toaster /> 
-          setIsSubmitting(false);
-          return;
-        }
+      if  (response.message === "Insufficient credits") {
+        setShowInsufficientCreditsModal(true);
+
+        setIsSubmitting(false);
+        return;
+      }
+    }
+    catch(error) {
+      console.error("Error updating credits:", error);
+      setIsSubmitting(false);
+      return;
     }
     
     const chosenRace  = raceToPrompt[race];
@@ -141,8 +151,8 @@ const createImage = async (imageRequest: ImageRequest) => {
     <div className='flex h-screen'>
         <div className="flex flex-col justify-between w-1/2 max-w-xl p-4">
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                {creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />}
-                <div className="grid w-full items-center gap-1.5 mb-4">
+            {showInsufficientCreditsModal && <InsufficientCreditsModal />}
+            <div className="grid w-full items-center gap-1.5 mb-4">
                     <Label htmlFor="imageTitle" className='text-white'>Choose your features</Label>
                     <Input type="text" id="imageTitle" placeholder="Image Title (Optional)" value={imageTitle} onChange={(e) => setImageTitle(e.target.value)}
                     style={{borderColor: titleError ? 'red' : 'inital'}}/>
