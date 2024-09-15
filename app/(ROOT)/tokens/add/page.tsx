@@ -13,8 +13,7 @@ const AddTokenPage = async () => {
   const user = await getUserById(userId);
   return (
     <>
-        <CreateTokenForm userId={user._id} creditBalance={user.creditBalance}>
-        </CreateTokenForm>
+        <CreateTokenForm userId={user._id} creditBalance={user.creditBalance} />
     </>
   )
 }
