@@ -5,6 +5,7 @@ import { TransformSelect } from '../ui/transformSelect';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
+import { Toaster } from '@/components/ui/toaster';
 import {
   Carousel,
   CarouselContent,
@@ -25,6 +26,7 @@ import { updateCredits } from '@/lib/actions/user.actions';
 import DownloadButton from './DownloadButton';
 import ClipLoader from 'react-spinners/ClipLoader';
 import LoadingOverlay from './LoadingOverlay';
+import { toast } from '../ui/use-toast';
 
 interface ImageRequest {
     title: string;
@@ -52,7 +54,16 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
     setAddedImageUrlTwo(null);
     setTitleError('');
 
-    await updateCredits(userId, creditFee)
+    try {
+      await updateCredits(userId, creditFee)
+    } catch (error){
+        // Handle insufficient credits error
+        if ((error as Error).message === "Insufficient credits") {
+          <Toaster /> 
+          setIsSubmitting(false);
+          return;
+        }
+    }
     
     const chosenRace  = raceToPrompt[race];
     const chosenWeapon = weaponToPrompt[weapon];

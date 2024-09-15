@@ -312,7 +312,7 @@
 
  /* Navbar Component */
 .sidebar {
-  @apply hidden w-full bg-white p-5 shadow-md shadow-purple-200/50 lg:flex fixed top-0 z-50; background-color: #1a88c8;
+  @apply hidden w-full bg-white p-5 shadow-md shadow-purple-200/50 lg:flex fixed top-0 z-50; background-color: #1d23d3;
 }
 
 .sidebar-logo {
@@ -339,7 +339,7 @@
 }
 
 .orange-background {
-  @apply bg-orange-500;
+  @apply bg-orange-600;
 }
 
 .sidebar-link {
