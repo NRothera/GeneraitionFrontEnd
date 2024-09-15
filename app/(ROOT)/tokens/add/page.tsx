@@ -18,4 +18,4 @@ const AddTokenPage = async () => {
   )
 }
 
-export default AddTokenPage
+export default AddTokenPage;
