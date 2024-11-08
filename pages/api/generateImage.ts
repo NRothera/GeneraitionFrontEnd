@@ -46,12 +46,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { title, prompt, userId } = req.body;
+    const { title, prompt, negativePrompt, userId } = req.body;
 
     const apiCaller = new StableDiffusionApiCaller();
     try {
         console.log("about to create and upload image")
-        const response = await apiCaller.CreateImage({ title, prompt, userId });
+        const response = await apiCaller.CreateImage({ title, prompt, negativePrompt, userId });
         res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ message: 'Internal server error: ' + error });

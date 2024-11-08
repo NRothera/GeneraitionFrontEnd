@@ -1,6 +1,7 @@
 export class StableDiffusionModel {
     prompt: string = "";
     // negative_prompt: string = "(worst quality, low quality:1.4), watermark, signature, shadows";
+    negative_prompt: string = "";
     styles: string[] = ["string"];
     seed: number = -1;
     subseed: number = -1;
