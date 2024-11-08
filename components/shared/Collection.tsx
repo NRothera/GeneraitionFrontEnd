@@ -37,6 +37,8 @@ export const Collection = ({
   const onPageChange = (action: string) => {
     const pageValue = action === "next" ? Number(page) + 1 : Number(page) - 1;
 
+    if (!searchParams) return;
+
     const newUrl = formUrlQuery({
       searchParams: searchParams.toString(),
       key: "page",
