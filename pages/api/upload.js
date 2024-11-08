@@ -1,5 +1,13 @@
 import { BlobServiceClient } from '@azure/storage-blob';
 
+export const config = {
+    api: {
+      bodyParser: {
+        sizeLimit: '10mb', // Set desired size limit here
+      },
+    },
+  };
+  
 export default async function AzureStorageUpload(req, res) {
 
     if (req.method !== 'POST') {

@@ -3,14 +3,16 @@ import axios from 'axios';
 import { StableDiffusionModel } from '@/types/stableDiffusion';
 
 class StableDiffusionApiCaller {
-    async CreateImage(imageRequest: { title: string; prompt: string; userId: string }): Promise<any> {
+    async CreateImage(imageRequest: { title: string; prompt: string; negativePrompt: string; userId: string }): Promise<any> {
         try {
             console.log("Received image request:", imageRequest);
 
             const modelData = new StableDiffusionModel();
             modelData.prompt = imageRequest.prompt;
             modelData.override_settings = {};
-            modelData.override_settings["sd_model_checkpoint"] = "dDTopDownToken_v10.ckpt";
+            modelData.override_settings["sd_model_checkpoint"] = "flux_dev.safetensors";
+            modelData.override_settings["CLIP_stop_at_last_layers"] = 2;
+            modelData.negative_prompt = imageRequest.negativePrompt;
 
             const url = `${process.env.NEXT_PUBLIC_STABLE_DIFFUSION_API_URL}/sdapi/v1/txt2img`;
             console.log("Stable Diffusion API URL:", url);

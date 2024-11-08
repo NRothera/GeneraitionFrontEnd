@@ -339,7 +339,7 @@
 }
 
 .orange-background {
-  @apply bg-orange-600;
+  @apply bg-orange-400;
 }
 
 .sidebar-link {

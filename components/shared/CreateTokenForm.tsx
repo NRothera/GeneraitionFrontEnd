@@ -1,6 +1,6 @@
 "use client"
 
-import { races,weapons,armors,classes, hairLength, creditFee } from '../../constants/index'; // Adjust the path as necessary to correctly import the races array
+import { races,weapons,armors,classes, hairLength, creditFee, genders } from '../../constants/index'; // Adjust the path as necessary to correctly import the races array
 import { TransformSelect } from '../ui/transformSelect';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { startTransition, useEffect, useState } from 'react';
 import { raceToPrompt } from '@/constants/racePrompts';
+import { genderToPrompt } from '@/constants/genderPrompts';
 import { weaponToPrompt } from '@/constants/weaponPrompts';
 import { hairToPrompt } from '@/constants/hairPrompts';
 import { armorToPrompt } from '@/constants/armorPrompts';
@@ -40,6 +41,7 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [race, setRace] = useState('');
   const [weapon, setWeapon] = useState('');
+  const [gender, setGender] = useState('');
   const [classType, setClassType] = useState('');
   const [armor, setArmor] = useState('');
   const [hair, setHair] = useState('');
@@ -49,7 +51,8 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
   const [addedImageUrlTwo, setAddedImageUrlTwo] = useState(null);
   const [titleError, setTitleError] = useState(''); // State for title error message
   const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
-
+  const [promptText, setPromptText] = useState<string>(''); 
+  const [negativePromptText, setNegativePromptText] = useState<string>(''); 
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
@@ -75,6 +78,7 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
       return;
     }
     
+    const chosenGender = genderToPrompt[gender]
     const chosenRace  = raceToPrompt[race];
     const chosenWeapon = weaponToPrompt[weapon];
     const chosenArmor = armorToPrompt[armor];
@@ -90,12 +94,33 @@ const CreateTokenForm = ({ userId, creditBalance }: TokenFormProps) => {
       setIsSubmitting(false);
       return;
     }
-  
-    const prompt = `${chosenRace}, ${chosenWeapon}, ${chosenArmor}, ${chosenHair}, ${chosenClass}, (background color = #66FF00)`;
+
+    const parameters = [
+      "masterpiece",
+      "disney style",
+      "white background",
+      "view from above",
+      chosenGender,
+      chosenRace,
+      chosenWeapon,
+      chosenArmor,
+      chosenHair,
+      chosenClass,
+      "facing forwards",
+      "head tilted down",
+      "<lora:TopDownTokenNAI:0.5>"
+    ];
+
+    
+    // const prompt = parameters.filter(param => param !== undefined).join(", ");
+    const prompt = promptText;
+    console.log(prompt)
+    // const prompt = `${chosenRace}, ${chosenWeapon}, ${chosenArmor}, ${chosenHair}, ${chosenClass}, white background, topdown, <lora:TopDownTokenNAI:0.6>`;
 
     const imageRequest = {
         title: titleOfImage.replace(/\s/g, '_'),
         prompt: prompt,
+        negativePrompt: negativePromptText,
         userId: userId,
     }
 
@@ -152,17 +177,40 @@ const createImage = async (imageRequest: ImageRequest) => {
         <div className="flex flex-col justify-between w-1/2 max-w-xl p-4">
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
             {showInsufficientCreditsModal && <InsufficientCreditsModal />}
-            <div className="grid w-full items-center gap-1.5 mb-4">
-                    <Label htmlFor="imageTitle" className='text-white'>Choose your features</Label>
-                    <Input type="text" id="imageTitle" placeholder="Image Title (Optional)" value={imageTitle} onChange={(e) => setImageTitle(e.target.value)}
-                    style={{borderColor: titleError ? 'red' : 'inital'}}/>
-                    {titleError && <p style={{ color: 'red', fontSize: '0.75rem'  }}>{titleError}</p>}
-                </div>
+              <div className="grid w-full items-center gap-1.5 mb-4">
+                      <Label htmlFor="imageTitle" className='text-white'>Choose your features</Label>
+                      <Input type="text" id="imageTitle" placeholder="Image Title (Optional)" value={imageTitle} onChange={(e) => setImageTitle(e.target.value)}
+                      style={{borderColor: titleError ? 'red' : 'inital'}}/>
+                      {titleError && <p style={{ color: 'red', fontSize: '0.75rem'  }}>{titleError}</p>}
+              
+              </div>
+              <div>
+                <label htmlFor="promptText">Prompt</label>
+                <textarea
+                  id="promptText"
+                  value={promptText}
+                  onChange={(e) => setPromptText(e.target.value)}
+                  placeholder="Enter additional prompt text"
+                  rows={4}
+                  cols={50}
+                />
+              </div>
+              <div>
+                <label htmlFor="negativePromptText">Negative Prompt</label>
+                <textarea
+                  id="negativePromptText"
+                  value={negativePromptText}
+                  onChange={(e) => setNegativePromptText(e.target.value)}
+                  placeholder="Enter negative prompt text"
+                  rows={4}
+                  cols={50}
+                />
+              </div>
                 <TransformSelect 
-                    onValueChange={setRace} 
-                    placeholder="Select a race" 
-                    label="Races" 
-                    items={races} 
+                    onValueChange={setGender} 
+                    placeholder="Select a gender" 
+                    label="Gender" 
+                    items={genders} 
                 />
                 <TransformSelect 
                     onValueChange={setWeapon} 
@@ -171,16 +219,16 @@ const createImage = async (imageRequest: ImageRequest) => {
                     items={weapons} 
                 />
                 <TransformSelect 
+                    onValueChange={setRace} 
+                    placeholder="Select a race" 
+                    label="Race" 
+                    items={races} 
+                />
+                <TransformSelect 
                     onValueChange={setHair} 
                     placeholder="Select hair length" 
                     label="Hair Length" 
                     items={hairLength} 
-                />
-                <TransformSelect 
-                    onValueChange={setClassType} 
-                    placeholder="Select a class" 
-                    label="Class" 
-                    items={classes} 
                 />
                 <TransformSelect 
                     onValueChange={setArmor} 
@@ -229,9 +277,13 @@ const createImage = async (imageRequest: ImageRequest) => {
       <div className="p-1">
         <Card>
           <CardContent className="flex aspect-square items-center justify-center p-6">
-          {!addedImageUrlTwo && <span className="text-4xl font-semibold">2</span>}
+          {!isSubmitting && !addedImageUrlTwo && <span className="text-4xl font-semibold">2</span>}
           <div className={`${isSubmitting ? 'loading' : ''}`}>
-              {addedImageUrlTwo && <img src={addedImageUrlTwo} alt="Generated Image with Background" />}
+          {isSubmitting && !addedImageUrl ? (
+                  <ClipLoader size={50} color={"#123abc"} loading={isSubmitting} />
+              ) : (
+                addedImageUrlTwo && <img src={addedImageUrlTwo} alt="Generated Image with background" />
+              )}
             </div>
           </CardContent>
         </Card>

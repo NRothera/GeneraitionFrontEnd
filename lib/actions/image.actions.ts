@@ -7,8 +7,6 @@ import User from "../database/models/user.model";
 import Image from "../database/models/image.model";
 import { redirect } from "next/navigation";
 
-import { v2 as cloudinary } from 'cloudinary'
-
 const populateUser = (query: any) => query.populate({
   path: 'author',
   model: User,
@@ -100,43 +98,14 @@ export async function getAllImages({ limit = 9, page = 1, searchQuery = '' }: {
   try {
     await connectToDatabase();
 
-    cloudinary.config({
-      cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-      secure: true,
-    })
-
-    let expression = 'folder=imaginify';
-
-    if (searchQuery) {
-      expression += ` AND ${searchQuery}`
-    }
-
-    const { resources } = await cloudinary.search
-      .expression(expression)
-      .execute();
-
-    const resourceIds = resources.map((resource: any) => resource.public_id);
-
-    let query = {};
-
-    if(searchQuery) {
-      query = {
-        publicId: {
-          $in: resourceIds
-        }
-      }
-    }
-
     const skipAmount = (Number(page) -1) * limit;
 
-    const images = await populateUser(Image.find(query))
+    const images = await populateUser(Image.find())
       .sort({ updatedAt: -1 })
       .skip(skipAmount)
       .limit(limit);
     
-    const totalImages = await Image.find(query).countDocuments();
+    const totalImages = await Image.find().countDocuments();
     const savedImages = await Image.find().countDocuments();
 
     return {

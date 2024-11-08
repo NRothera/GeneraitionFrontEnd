@@ -171,7 +171,7 @@ export const navLinks = [
 
   export const races = [
     {
-      title: "Ogre"
+      title: "Orc"
     },
     {
       title: "Dwarf"
@@ -200,7 +200,6 @@ export const navLinks = [
     {
       title: "Tiefling"
     }
-    
   ]
 
   export const weapons = [
@@ -254,6 +253,15 @@ export const navLinks = [
     },
     {
       title: "Medium Length"
+    }
+  ]
+
+  export const genders = [
+    {
+      title: "Male"
+    },
+    {
+      title: "Female"
     }
   ]
 
