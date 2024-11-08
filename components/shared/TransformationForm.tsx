@@ -27,7 +27,6 @@ import { aspectRatioOptions, creditFee, defaultValues, transformationTypes } fro
 import { CustomField } from "./CustomField"
 import { useEffect, useState, useTransition } from "react"
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils"
-import MediaUploader from "./MediaUploader"
 import TransformedImage from "./TransformedImage"
 import { updateCredits } from "@/lib/actions/user.actions"
 import { getCldImageUrl } from "next-cloudinary"
@@ -278,7 +277,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
         )}
 
         <div className="media-uploader-field">
-          <CustomField 
+          {/* <CustomField 
             control={form.control}
             name="publicId"
             className="flex size-full flex-col"
@@ -291,7 +290,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
                 type={type}
               />
             )}
-          />
+          /> */}
 
           <TransformedImage 
             image={image}
